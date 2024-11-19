@@ -1017,7 +1017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1271163588
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1407,6 +1407,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4359c73c07e3194aaf46e0f240ff8cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _currentlevelData: {fileID: 11400000, guid: ec9e10dc14308094685d15eeaaec7f47, type: 2}
+  _levelText: {fileID: 1841763228}
+  _movesText: {fileID: 310545891}
+  _bestText: {fileID: 2144620194}
+  _playButtonTransform: {fileID: 1450086077}
+  _gridParent: {fileID: 158314405}
+  _nextButtonTransform: {fileID: 1271163588}
+  _cellPrefab: {fileID: 5391045434644005061, guid: 882b5ec889bd52b4dba95ece10fe6b92, type: 3}
 --- !u!4 &1726493706
 Transform:
   m_ObjectHideFlags: 0
@@ -1695,7 +1703,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1373707107}
-  - {fileID: 1726493706}
   - {fileID: 158314405}
   - {fileID: 1060061896}
   - {fileID: 395961084}
+  - {fileID: 1726493706}

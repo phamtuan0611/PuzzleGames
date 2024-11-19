@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7585815862817916909}
   - component: {fileID: 8782369505477993481}
   - component: {fileID: 2087756287377783125}
+  - component: {fileID: 5391045434644005061}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -75,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.85660374, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.89411765, g: 0.030670973, b: 0.023529429, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -130,3 +131,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5391045434644005061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658034058938231897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97354d685a08cf442950c8b911923ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Color: {r: 0, g: 0, b: 0, a: 0}
+  Position: {x: 0, y: 0}
+  _bgSprite: {fileID: 8782369505477993481}

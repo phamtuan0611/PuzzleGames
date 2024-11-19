@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: DefaultLevel
   m_EditorClassIdentifier: 
   BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
-  TopLeftColor: {r: 0.352674, g: 1, b: 0, a: 0}
-  TopRightColor: {r: 1, g: 0.3397898, b: 0.3226415, a: 0}
-  BottomLeftColor: {r: 0, g: 1, b: 0.9579284, a: 0}
-  BottomRightColor: {r: 1, g: 0.8811702, b: 0, a: 0}
+  TopLeftColor: {r: 0.352674, g: 1, b: 0, a: 1}
+  TopRightColor: {r: 1, g: 0.3397898, b: 0.3226415, a: 1}
+  BottomLeftColor: {r: 0, g: 1, b: 0.9579284, a: 1}
+  BottomRightColor: {r: 1, g: 0.8811702, b: 0, a: 1}
   Row: 8
   Col: 8
   LockerCells:
