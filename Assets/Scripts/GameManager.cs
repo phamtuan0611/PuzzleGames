@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     private Color[,] correctColors;
 
     private Cell selectedCell;
-    private Cell moveCell;
+    private Cell movedCell;
     private Vector2 startPos;
 
     private void Awake()
@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
         canMove = false;
         canStartClicking = false;
         hasGameStarted = false;
+        
     }
 
     private void Start()
@@ -74,6 +75,141 @@ public class GameManager : MonoBehaviour
         SpawnCells();
     }
 
+    private void Update()
+    {
+        if (hasGameFinished) return;
+
+        if (!hasGameStarted) return;
+
+        //Check xem da thuc hien het Animation chua, neu roi thi cho phep Start
+        if (!canStartClicking)
+        {
+            for (int i = 0; i < Rows; i++)
+            {
+                for (int j = 0; j < Cols; j++)
+                {
+                    if (cells[i, j].IsStartMovePlaying) return;
+                }
+            }
+            canStartClicking = true;
+            canMove = true;
+        }
+        
+        //Doi selectedCell va movedCell hoan thanh di chuyen
+        if (!canMove)
+        {
+            if (selectedCell.hasSelectedMoveFinished && movedCell.hasMoveFinished)
+            {
+                selectedCell = null;
+                movedCell = null;
+                canMove = true;
+                CheckWin();
+            }
+        }
+
+        //
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+            if (hit && hit.collider.TryGetComponent(out selectedCell))
+            {
+                if (_currentlevelData.LockerCells.Contains(new Vector2Int(selectedCell.Position.y, selectedCell.Position.x)))
+                {
+                    selectedCell = null;
+                    return;
+                }
+                startPos = mousePos2D;
+                selectedCell.SelectedMoveStart();
+            }
+        }
+        else if (Input.GetMouseButton(0))
+        {
+            if (selectedCell == null) return;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+            Vector2 offset = mousePos2D - startPos;
+            selectedCell.SelectedMove(offset);
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (selectedCell == null) return;
+
+            canMove = false;
+            Vector2 pos = (Vector2)selectedCell.gameObject.transform.localPosition + new Vector2(0.5f, 0.5f);
+            int row = (int)pos.y;
+            int col = (int)pos.x;
+            movedCell = cells[row, col];
+            if (_currentlevelData.LockerCells.Contains(new Vector2Int(row, col)) || movedCell == selectedCell)
+            {
+                selectedCell.SelectedMoveEnd();
+                return;
+            }
+
+            Vector2Int tempPos = selectedCell.Position;
+            selectedCell.Position = movedCell.Position;
+            movedCell.Position = tempPos;
+
+            cells[selectedCell.Position.y, selectedCell.Position.x] = selectedCell;
+            cells[movedCell.Position.y, movedCell.Position.x] = movedCell;
+
+            selectedCell.SelectedMoveEnd();
+            movedCell.MoveEnd();
+
+            moveNum++;
+            _movesText.text = moveNum.ToString();
+        }
+    }
+
+    private void CheckWin()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Cols; j++)
+            {
+                if (cells[i, j].Color != correctColors[i, j])
+                {
+                    return;
+                }
+            }
+        }
+
+        hasGameFinished = true;
+        if (bestNum == 0 || bestNum > moveNum)
+        {
+            bestNum = moveNum;
+        }
+        PlayerPrefs.SetInt("Best" + levelNum.ToString(), bestNum);
+        _bestText.text = bestNum.ToString();
+        PlayerPrefs.SetInt("Level", levelNum + 1);
+
+        _nextButtonTransform.gameObject.SetActive(true);
+        playNextTween = _nextButtonTransform.DOScale(1.1f, 1f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+
+        for (int i = 0; i< Rows; i++)
+        {
+            for (int j = 0; j < Cols; j++)
+            {
+                cells[i, j].GameFinished();
+            }
+        }
+    }
+
+    public void ClickedNextButton()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Cols; j++)
+            {
+                if (cells[i, j].IsStartMovePlaying) return;
+            }
+        }
+
+        playNextTween.Kill();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
+
     private void SpawnCells()
     {
         cells = new Cell[_currentlevelData.Row, _currentlevelData.Col];
@@ -81,7 +217,7 @@ public class GameManager : MonoBehaviour
 
         Camera.main.backgroundColor = _currentlevelData.BackGroundColor;
 
-        for (int x = 0; x < Rows; x++) 
+        for (int x = 0; x < Rows; x++)
         {
             for (int y = 0; y < Cols; y++)
             {
@@ -116,24 +252,27 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //playStartTween.Kill();
-        //playStartTween = null;
+        playStartTween.Kill(); //Dung hieu ung Tween
+        playStartTween = null; //Giai phong bo nho
 
-        for (int i = 0; i < Rows; i++)
+        for (int i = 0; i < 3; i++)
         {
-            for (int j = 0; j < Cols; j++)
+            for (int j = 0; j < 2; j++)
             {
-                if (_currentlevelData.LockerCells.Contains(new Vector2Int(i, j))){
-                    continue;
+                if (_currentlevelData.LockerCells.Contains(new Vector2Int(i, j)))
+                {
+                    continue; //Bo qua cac Block bi khoa
                 }
 
                 int swapX, swapY;
+                //Xac dinh toa do Swap, lap lai cho den khi khac toa do cua vi tri cac Block bi khoa
                 do
                 {
                     swapX = Random.Range(0, Rows);
                     swapY = Random.Range(0, Cols);
                 } while (_currentlevelData.LockerCells.Contains(new Vector2Int(swapX, swapY)));
 
+                //Thuc hien hoan doi
                 Cell temp = cells[i, j];
                 cells[i, j] = cells[swapX, swapY];
                 Vector2Int swappedPosition = cells[swapX, swapY].Position;
@@ -143,6 +282,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //Thuc thi hieu ung chuyen dong cua cac cell
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Cols; j++)

@@ -10,7 +10,7 @@ public class Cell : MonoBehaviour
 
     public bool IsStartTweenPlaying => startAnimation.IsActive();
     public bool IsStartMovePlaying => startMoveAnimation.IsActive();
-    public bool hasSelectedMoveFinished => !selectedMoveAnimationTime.IsActive();
+    public bool hasSelectedMoveFinished => !selectedMoveAnimation.IsActive();
     public bool hasMoveFinished => !moveAnimation.IsActive(); 
 
     [SerializeField] private SpriteRenderer _bgSprite;
@@ -22,7 +22,7 @@ public class Cell : MonoBehaviour
 
     private Tween startAnimation;
     private Tween startMoveAnimation;
-    private Tween selectedMoveAnimationTime;
+    private Tween selectedMoveAnimation;
     private Tween moveAnimation;
 
     private const int FRONT = 1;
@@ -30,7 +30,6 @@ public class Cell : MonoBehaviour
 
     public void Init(Color color, int x, int y)
     {
-        Debug.Log($"Init called with Color: {color}, Position: ({x}, {y})");
         Color = color;
         _bgSprite.color = Color;
         Position = new Vector2Int(x, y);
@@ -48,7 +47,73 @@ public class Cell : MonoBehaviour
     public void AniamteStartPositon()
     {
         startMoveAnimation = transform.DOLocalMove(new Vector3(Position.x, Position.y, 0), _startMoveAnimationTime);
-        startMoveAnimation.SetEase(Ease.InSine); //Hieu ung bat dau cham roi nhanh dan (nguoc lai voi OutExpo
+        startMoveAnimation.SetEase(Ease.InSine); //Hieu ung bat dau cham roi nhanh dan (nguoc lai voi OutExpo)
         startMoveAnimation.Play();
+    }
+
+    public void GameFinished()
+    {
+        transform.localScale = Vector3.one;
+        float delay = (Position.x +  Position.y) * _startScaleDelay;
+        startAnimation = transform.DOScale(0.5f, _startScaleTime);
+        startAnimation.SetLoops(2, LoopType.Yoyo);
+        startAnimation.SetEase(Ease.InOutExpo);
+        startAnimation.SetDelay(0.5f + delay);
+        startAnimation.Play();
+    }
+
+    public void SelectedMoveStart()
+    {
+        _bgSprite.sortingOrder = FRONT;
+        transform.localScale = Vector3.one * 1.2f;
+    }
+
+    public void SelectedMove(Vector2 offset)
+    {
+        transform.localPosition = Position + offset;
+        float minX = 0f;
+        float maxX = GameManager.Cols - 1;
+        float minY = 0f;
+        float maxY = GameManager.Rows - 1;
+        Vector2 pos = transform.localPosition;
+        if (pos.x < minX)
+        {
+            pos.x = minX;
+        }
+        if (pos.x > maxX)
+        {
+            pos.x = maxX;
+        }
+        if (pos.y < minY)
+        {
+            pos.y = minY;
+        }
+        if (pos.y > maxY)
+        {
+            pos.y = maxY;
+        }
+        transform.localPosition = pos;
+    }
+
+    public void SelectedMoveEnd()
+    {
+        selectedMoveAnimation = transform.DOLocalMove(new Vector3(Position.x, Position.y, 0f), _selectedmoveAnimationTime);
+        selectedMoveAnimation.onComplete = () =>
+        {
+            _bgSprite.sortingOrder = BACK;
+            transform.localScale = Vector3.one;
+        };
+        selectedMoveAnimation.Play();
+    }
+
+    public void MoveEnd()
+    {
+        _bgSprite.sortingOrder = FRONT;
+        moveAnimation = transform.DOLocalMove(new Vector3(Position.x, Position.y, 0f), _moveAnimationTime);
+        moveAnimation.onComplete = () =>
+        {
+            _bgSprite.sortingOrder = BACK;
+        };
+        moveAnimation.Play();
     }
 }
