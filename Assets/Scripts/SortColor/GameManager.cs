@@ -255,9 +255,9 @@ public class GameManager : MonoBehaviour
         playStartTween.Kill(); //Dung hieu ung Tween
         playStartTween = null; //Giai phong bo nho
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 6; i++)
         {
-            for (int j = 0; j < 2; j++)
+            for (int j = 0; j < 5; j++)
             {
                 if (_currentlevelData.LockerCells.Contains(new Vector2Int(i, j)))
                 {

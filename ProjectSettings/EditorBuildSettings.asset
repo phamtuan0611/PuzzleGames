@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GamePlay.unity
+    path: Assets/Scenes/SortColor.unity
     guid: f0d3555e668947d4789a61d75f54549c
   m_configObjects: {}
